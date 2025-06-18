@@ -9,6 +9,7 @@ use App\Http\Resources\TaskResource;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class TaskController extends Controller
 {
@@ -45,7 +46,16 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     {
-        return new TaskResource($request->user()->tasks()->create($request->validated()));
+        $attributes = $request->validated();
+
+        unset($attributes['file']);
+
+        if (! empty($request->file('file'))) {
+            $filePath = $request->file('file')->store('files');
+            $attributes['file'] = $filePath;
+        }
+
+        return new TaskResource($request->user()->tasks()->create($attributes));
     }
 
     /**
@@ -61,7 +71,19 @@ class TaskController extends Controller
      */
     public function update(TaskRequest $request, Task $task)
     {
-        $task->update($request->validated());
+        $attributes = $request->validated();
+
+        unset($attributes['file']);
+
+        if (! empty($request->file('file'))) {
+            if (! empty($task->file)) {
+                Storage::disk('public')->delete($task->file);
+            }
+            $filePath = $request->file('file')->store('files');
+            $attributes['file'] = $filePath;
+        }
+
+        $task->update($attributes);
 
         return new TaskResource($task);
     }
@@ -71,6 +93,10 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
+        if (! empty($task->file)) {
+            Storage::disk('public')->delete($task->file);
+        }
+
         $task->delete();
 
         return response()->json(null, 204);
