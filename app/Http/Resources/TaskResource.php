@@ -22,6 +22,7 @@ class TaskResource extends JsonResource
                 'id' => $this->priority,
                 'name' => $this->priority->name,
             ],
+            'file' => asset('storage/' . $this->file),
             'control' => [
                 'status' => $this->isControl,
                 'expire_date' => $this->control_at,

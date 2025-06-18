@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Priority;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rules\Enum;
+use Illuminate\Validation\Rules\File;
 
 class TaskRequest extends FormRequest
 {
@@ -27,6 +28,7 @@ class TaskRequest extends FormRequest
             'name' => ['required', 'string', 'min:3', 'max:50'],
             'description' => ['nullable', 'string', 'min:3'],
             'priority' => ['required', new Enum(Priority::class)],
+            'file' => ['nullable', File::types(['pdf', 'docx', 'xlsx'], 'max:3072')],
             'control_at' => ['nullable', 'date', 'after:today'],
             'is_completed' => ['boolean']
         ];
