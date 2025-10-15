@@ -23,8 +23,6 @@ class TaskFactory extends Factory
             'user_id' => User::factory(),
             'name' => fake()->text(50),
             'description' => fake()->text(250),
-            // 'priority' => rand(1, 3),
-            // 'control_at' => now()->addDays(rand(1, 10)),
             'is_comleted' => fake()->boolean(),
         ];
     }
